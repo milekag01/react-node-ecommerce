@@ -24,10 +24,14 @@
   },
   "homepage": "https://github.com/milekag01/react-node-ecommerce#readme",
   "dependencies": {
+    "body-parser": "^1.19.0",
+    "cookie-parser": "^1.4.5",
     "crypto": "^1.0.1",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
+    "express-validator": "^5.3.1",
     "mongoose": "^5.9.10",
+    "morgan": "^1.10.0",
     "uuid": "^7.0.3"
   }
 }
