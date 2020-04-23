@@ -1,0 +1,31 @@
+{
+  "name": "react-node-ecommerce",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "develop": "nodemon index.js",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/milekag01/react-node-ecommerce.git"
+  },
+  "keywords": [
+    "ecommerce",
+    "react",
+    "node",
+    "mongodb"
+  ],
+  "author": "milekag01",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/milekag01/react-node-ecommerce/issues"
+  },
+  "homepage": "https://github.com/milekag01/react-node-ecommerce#readme",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "mongoose": "^5.9.10"
+  }
+}
