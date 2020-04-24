@@ -71,3 +71,63 @@ exports.create = (req,res) => {
         });
     });
 }
+
+exports.remove = async (req, res) => {
+    const product = req.product;
+    try {
+        await product.remove();
+        return res.json({
+            message: 'Product deleted successfully'
+        });
+    } catch(error) {
+        res.status(400).json({
+            error: errorHandler(error)
+        })
+    }
+}
+
+exports.update = (req,res) => {
+    
+    let form = new formidable.IncomingForm();
+    form.keepExtensions = true;
+    form.parse(req, (error, fields, files) => {
+        if(error) {
+            return res.status(400).json({
+                error: 'Image upload failed'
+            })
+        }
+
+        const {name, description, price, category, quantity, shipping} = fields;
+        
+        if(!name || !description || !price || !category || !quantity || !shipping) {
+            return res.status(400).json({
+                error: 'All fields are required'
+            })
+        }
+
+        let product = req.product;  // fetch existing product
+        product = _.extend(product, fields);
+        
+        if(files.photo) {
+            // 1kb = 1000
+            // 1mb = 1000000
+            if(files.photo.size > 1000000) {
+                return res.status(400).json({
+                    error: 'Image should be smaller than 1mb in size'
+                });
+            }
+            product.photo.data = fs.readFileSync(files.photo.path);
+            product.photo.contentType = files.photo.type;
+        }
+        console.log(product);
+        product.save((error, result) => {
+            if(error) {
+                console.log(error);
+                return res.status(400).json({
+                    error: errorHandler(error)
+                })
+            }
+            res.json({result: result});
+        });
+    });
+}
