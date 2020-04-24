@@ -9,6 +9,7 @@ const expressValidator = require('express-validator');
 // routes
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/user');
+const categoryRoutes = require('./routes/category');
 // app
 const app = express();
 
@@ -29,6 +30,7 @@ app.use(expressValidator());
 // routes middleware
 app.use('/api',userRoutes);
 app.use('/api',authRoutes);
+app.use('/api',categoryRoutes);
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
