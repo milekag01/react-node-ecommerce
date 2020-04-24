@@ -4,6 +4,29 @@ const fs = require('fs');
 const Product = require('../models/product');
 const {errorHandler}  =require('../helpers/dbErrorHandler');
 
+exports.productById = async (req,res,next,id) => {
+    try {
+        const product = await Product.findById(id);
+        if(!product) {
+            return res.status(400).json({
+                error: 'Product not found'
+            });
+        }
+        req.product = product;
+        next();
+    } catch(error) {
+        res.status(400).json({
+            error: 'Something went wrong'
+        })
+    }
+}
+
+exports.read = (req,res) => {
+    req.product.photo = undefined;  // due to huge size...
+    // we avoid sending it with other data...instead we will create seperate method for photos
+    return res.json(req.product);
+}
+
 exports.create = (req,res) => {
     
     let form = new formidable.IncomingForm();
