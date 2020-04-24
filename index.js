@@ -7,7 +7,8 @@ const cookieParser = require('cookie-parser');
 const expressValidator = require('express-validator');
 
 // routes
-const userRoutes = require('./routes/auth');
+const authRoutes = require('./routes/auth');
+const userRoutes = require('./routes/user');
 // app
 const app = express();
 
@@ -27,6 +28,7 @@ app.use(expressValidator());
 
 // routes middleware
 app.use('/api',userRoutes);
+app.use('/api',authRoutes);
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {

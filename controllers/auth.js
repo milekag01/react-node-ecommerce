@@ -69,7 +69,29 @@ exports.signout = (req, res) =>  {
 // it takes token from client and decode it with jwt secret to check 
 // if user is actually logged in or not. hence can be used as a
 // middleware
-exports.requiresSignin = expressJwt({
+exports.requireSignin = expressJwt({
     secret: process.env.JWT_SECRET,
     userProperty: 'auth'
 });
+
+// auth and admin middleware
+exports.isAuth = (req, res, next) => {
+    let user = req.profile && req.auth && req.profile._id == req.auth._id;
+    // console.log("req.profile: ", typeof req.profile._id);   // object
+    // console.log("req.auth: ", typeof req.auth._id);         // string 
+    if(!user) {
+        return res.status(403).json({
+            error: 'Access denied'
+        })
+    }
+    next();
+}
+
+exports.isAdmin = (req, res, next) => {
+    if(req.profile.role === 0) {
+        res.status(403).json({
+            error: "Admin resource! Access denied"
+        });
+    }
+    next();
+}
