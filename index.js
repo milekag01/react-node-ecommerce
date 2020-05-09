@@ -15,7 +15,7 @@ const productRoutes = require('./routes/product');
 const app = express();
 
 // database connection
-mongoose.connect(process.env.MONGODB_LOCAL, {
+mongoose.connect(process.env.MONGODB_REMOTE, {
     useNewUrlParser: true,
     useCreateIndex: true
 }).then(() => {
