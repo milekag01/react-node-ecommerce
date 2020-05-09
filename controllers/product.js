@@ -67,7 +67,7 @@ exports.create = (req,res) => {
                     error: errorHandler(error)
                 })
             }
-            res.json({result: result});
+            res.json(result);
         });
     });
 }
