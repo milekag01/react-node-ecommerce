@@ -24,9 +24,9 @@
   },
   "homepage": "https://github.com/milekag01/react-node-ecommerce#readme",
   "dependencies": {
+    "@sendgrid/mail": "^7.2.2",
     "body-parser": "^1.19.0",
     "braintree": "^2.23.0",
-    "braintree-web-drop-in-react": "^1.1.1",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
@@ -39,7 +39,6 @@
     "lodash": "^4.17.15",
     "mongoose": "^5.9.10",
     "morgan": "^1.10.0",
-    "sharp": "^0.25.2",
     "uuid": "^7.0.3"
   }
 }

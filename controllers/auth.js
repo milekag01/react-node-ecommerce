@@ -4,6 +4,7 @@ const expressJwt = require('express-jwt');  // for authorization check
 
 const {errorHandler} = require('../helpers/dbErrorHandler');
 
+// user signup
 exports.signup = async (req,res) => {
     // console.log("req.body: ", req.body);
     const user = new User(req.body);
@@ -23,6 +24,7 @@ exports.signup = async (req,res) => {
     }
 }
 
+// user signin
 exports.signin = async (req,res) => {
     
     try {
@@ -60,6 +62,7 @@ exports.signin = async (req,res) => {
     }
 }
 
+// user signout
 exports.signout = (req, res) =>  {
     res.clearCookie('t');
     res.json({message: "Signout Successful"});
@@ -69,12 +72,15 @@ exports.signout = (req, res) =>  {
 // it takes token from client and decode it with jwt secret to check 
 // if user is actually logged in or not. hence can be used as a
 // middleware
+
+// middleware to check if user is logged in or not
 exports.requireSignin = expressJwt({
     secret: process.env.JWT_SECRET,
     userProperty: 'auth'
 });
 
-// auth and admin middleware
+// auth and middleware
+// middleware to see if the user is authorised to access a route or not
 exports.isAuth = (req, res, next) => {
     let user = req.profile && req.auth && req.profile._id == req.auth._id;
     // console.log("req.profile: ", typeof req.profile._id);   // object
@@ -87,6 +93,7 @@ exports.isAuth = (req, res, next) => {
     next();
 }
 
+// middleware to check if user is admin or not
 exports.isAdmin = (req, res, next) => {
     if(req.profile.role === 0) {
         res.status(403).json({

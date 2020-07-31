@@ -4,6 +4,7 @@ const fs = require('fs');
 const Product = require('../models/product');
 const {errorHandler}  =require('../helpers/dbErrorHandler');
 
+// find product by id
 exports.productById = async (req,res,next,id) => {
     try {
         const product = await Product.findById(id);
@@ -21,12 +22,13 @@ exports.productById = async (req,res,next,id) => {
     }
 }
 
+// read product details
 exports.read = (req,res) => {
     req.product.photo = undefined;  // due to huge size...
-    // we avoid sending it with other data...instead we will create seperate method for photos
     return res.json(req.product);
 }
 
+// create new product
 exports.create = (req,res) => {
     
     let form = new formidable.IncomingForm();
@@ -72,6 +74,7 @@ exports.create = (req,res) => {
     });
 }
 
+// remove a product
 exports.remove = async (req, res) => {
     const product = req.product;
     try {
@@ -86,6 +89,7 @@ exports.remove = async (req, res) => {
     }
 }
 
+// update a product details
 exports.update = (req,res) => {
     
     let form = new formidable.IncomingForm();
@@ -139,6 +143,7 @@ by arrival = /products?sortBy=createdAt&order=desc&limit=4
 if no params are sent, all products are returned.
 **/
 
+// list all products according to filter given
 exports.list = (req, res) => {
     let order = req.query.order ? req.query.order : 'asc';
     let sortBy = req.query.sortBy ? req.query.sortBy : '_id';
@@ -159,6 +164,7 @@ exports.list = (req, res) => {
             })
 }
 
+// list all related product on a product view page
 exports.listRelated = (req,res) => {
     let limit = req.query.limit ? parseInt(req.query.limit) : 6;
 
@@ -176,6 +182,7 @@ exports.listRelated = (req,res) => {
             })
 }
 
+// list all distinct categories on which product is available
 exports.listCategories = (req, res) => {
     Product.distinct('category', {}, (error, categories) => {
         if (error) {
@@ -194,7 +201,7 @@ exports.listCategories = (req, res) => {
  * as the user clicks on those checkbox and radio buttons
  * we will make api request and show the products to users based on what he wants
  */
-
+// used to implement category filter and price range
 exports.listBySearch = (req, res) => {
     let order = req.body.order ? req.body.order : "desc";
     let sortBy = req.body.sortBy ? req.body.sortBy : "_id";
@@ -240,7 +247,8 @@ exports.listBySearch = (req, res) => {
         });
 };
 
-// will be used as a middleware: i.e. runs everytime we request for product
+
+// will be used as a middleware to fetch the photo: i.e. runs everytime we request for product
 exports.photo = (req, res, next) => {
     if(req.product.photo.data) {
         res.set('Content-Type', req.product.photo.contentType);
@@ -249,7 +257,7 @@ exports.photo = (req, res, next) => {
     next();
 }
 
-// for search bar
+// for implementing search bar
 exports.listSearch = (req, res) => {
     // create query object to hold search value and category value
     const query = {};
@@ -271,4 +279,24 @@ exports.listSearch = (req, res) => {
             res.json(products);
         }).select('-photo');
     }
+};
+
+// decrease quantity of product in db after purchase
+exports.decreaseQuantity = (req, res, next) => {
+    let bulkOps = req.body.order.products.map(item => {
+        return {
+            updateOne: {
+                filter: { _id: item._id },
+                update: { $inc: { quantity: -item.count, sold: +item.count } }
+            }
+        };
+    });
+    Product.bulkWrite(bulkOps, {}, (error, products) => {
+        if (error) {
+            return res.status(400).json({
+                error: 'Could not update product'
+            });
+        }
+        next();
+    });
 };

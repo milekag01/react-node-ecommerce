@@ -1,86 +1,86 @@
 const Category = require('../models/category');
-const {errorHandler}  =require('../helpers/dbErrorHandler');
+const Product = require('../models/product');
+const { errorHandler } = require('../helpers/dbErrorHandler');
 
-
-exports.categoryById = async (req,res,next,id) => {
-    try {
-        const category = await Category.findById(id);
-        if(!category) {
+// find cateogry by id
+exports.categoryById = (req, res, next, id) => {
+    Category.findById(id).exec((err, category) => {
+        if (err || !category) {
             return res.status(400).json({
-                error: 'category not found'
+                error: 'Category does not exist'
             });
         }
         req.category = category;
         next();
-    } catch(error) {
-        res.status(400).json({
-            error: 'Something went wrong'
-        })
-    }
-}
+    });
+};
 
-exports.create = async (req,res) => {
+// create new category
+exports.create = (req, res) => {
     const category = new Category(req.body);
-    try {
-        await category.save();
-        res.json({
-            category: category
-        });
+    category.save((err, data) => {
+        if (err) {
+            return res.status(400).json({
+                error: errorHandler(err)
+            });
+        }
+        res.json({ data });
+    });
+};
 
-    } catch (error) {
-        return res.status(400).json({
-            error: errorHandler(error)
-        })
-    }
-}
-
+// read a category
 exports.read = (req, res) => {
     return res.json(req.category);
-}
+};
 
-exports.update = async (req, res) => {
+// update category
+exports.update = (req, res) => {
+    console.log('req.body', req.body);
+    console.log('category update param', req.params.categoryId);
+
     const category = req.category;
     category.name = req.body.name;
-
-    try {
-        await category.save();
-        return res.json(category);
-
-    } catch (error) {
-        res.status(400).json({
-            error: errorHandler(error)
-        });       
-    }
-}
-
-exports.remove = async (req, res) => {
-    const category = req.category;
- 
-    try {
-        await category.remove();
-        return res.json({
-            message: 'Category removed successfully'
-        });   
-    } catch (error) {
-        res.status(400).json({
-            error: errorHandler(error)
-        });       
-    }
-}
-
-exports.list = async (req, res) => {
-    try {
-        const categories = await Category.find();
-        if(!categories) {
+    category.save((err, data) => {
+        if (err) {
             return res.status(400).json({
-                message: 'No category available'
-            })
+                error: errorHandler(err)
+            });
         }
-        res.json(categories);
-        
-    } catch(error) {
-        res.status(400).json({
-            error: errorHandler(error)
-        })
-    }
-}
+        res.json(data);
+    });
+};
+
+// remove a category
+exports.remove = (req, res) => {
+    const category = req.category;
+    Product.find({ category }).exec((err, data) => {
+        if (data.length >= 1) {
+            return res.status(400).json({
+                message: `Sorry. You can't delete ${category.name}. It has ${data.length} associated products.`
+            });
+        } else {
+            category.remove((err, data) => {
+                if (err) {
+                    return res.status(400).json({
+                        error: errorHandler(err)
+                    });
+                }
+                res.json({
+                    message: 'Category deleted'
+                });
+            });
+        }
+    });
+};
+
+// list all categories
+exports.list = (req, res) => {
+    Category.find().exec((err, data) => {
+        if (err) {
+            return res.status(400).json({
+                error: errorHandler(err)
+            });
+        }
+        res.json(data);
+    });
+};
