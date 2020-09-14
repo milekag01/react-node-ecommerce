@@ -18,4 +18,4 @@ $ npm install
 $ npm run start
 ```
 
-**Client:** https://github.com/milekag01/react-node-ecommerce-client
+**Visit client repo to see project tasks:** https://github.com/milekag01/react-node-ecommerce-client
